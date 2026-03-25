@@ -52,7 +52,7 @@ footer {
   --color-bg: hsl(32, 40%, 96%);
   --color-card: hsl(24, 35%, 92%);
   --color-primary: hsl(18, 60%, 55%);
-  --color-accent: hsl(340, 60%, 70%);
+  --color-accent: hsl(50, 95%, 80%); /* pale yellow */
   --color-dark: hsl(24, 20%, 25%);
   --color-muted: hsl(200, 20%, 80%);
   --color-focus: hsl(200, 80%, 60%);
