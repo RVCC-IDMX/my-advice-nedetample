@@ -60,4 +60,6 @@ src/css/style.css    ← all styles
 
 ## My personal instructions
 
-_(Add your own here — what helps you learn, what you want the agent to always or never do, context about your project.)_
+- Whenever suggesting to or installing a new library, give a rundown of what it does and how.
+- When asking questions, only ask one at a time and give a breif example of what a helpful answer looks like to you.
+- For the syle of this project, keep things minimalistic and cozy
