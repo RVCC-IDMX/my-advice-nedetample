@@ -1,24 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Advice</title>
-    <link rel="stylesheet" href="/src/css/style.css" />
+    <title>What Should I Listen To?</title>
+    <link rel="stylesheet" href="src/css/style.css" />
   </head>
   <body>
-    <header>
-      <h1>My advice</h1>
+    <header class="hero">
+      <h1>What Should I Listen To?</h1>
+      <p class="subtitle">
+        Find the perfect song for your mood, activity, and time—retro record
+        style!
+      </p>
     </header>
-
     <main>
-      <p id="message"></p>
+      <section class="preferences-card">
+        <form id="preferences-form" autocomplete="off">
+          <div class="form-group">
+            <label for="vibe">Vibe</label>
+            <select id="vibe" name="vibe">
+              <option value="">Any vibe</option>
+              <option value="chill">Chill</option>
+              <option value="hyped">Hyped</option>
+              <option value="focused">Focused</option>
+              <option value="upbeat">Upbeat</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="time">Time available</label>
+            <select id="time" name="time">
+              <option value="">Any amount</option>
+              <option value="180">3 minutes or less</option>
+              <option value="300">5 minutes or less</option>
+              <option value="480">8 minutes or less</option>
+              <option value="900">15 minutes or less</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="genre">Genre</label>
+            <select id="genre" name="genre">
+              <option value="">Any genre</option>
+              <option value="rock">Rock</option>
+              <option value="pop">Pop</option>
+              <option value="jazz">Jazz</option>
+              <option value="indie">Indie</option>
+              <option value="rap">Rap</option>
+              <option value="classical">Classical</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="activity">Activity</label>
+            <select id="activity" name="activity">
+              <option value="">Any activity</option>
+              <option value="driving">Driving</option>
+              <option value="studying">Studying</option>
+              <option value="workout">Workout</option>
+              <option value="sleeping">Sleeping</option>
+              <option value="party">Party</option>
+              <option value="relaxing">Relaxing</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" id="get-recs">Get Recommendations</button>
+            <button type="button" id="random-pick">Spin the Record</button>
+          </div>
+        </form>
+      </section>
+      <section class="results-section">
+        <h2>Recommendations</h2>
+        <div id="random-pick-area" aria-live="polite"></div>
+        <div id="recommendations" aria-live="polite"></div>
+      </section>
     </main>
-
     <footer>
-      <p>&copy; 2026</p>
+      <p>
+        Made with <span aria-label="vinyl record" role="img">🎵</span> for music
+        lovers
+      </p>
     </footer>
-
-    <script type="module" src="/src/js/app.js"></script>
+    <script type="module" src="src/js/app.js"></script>
   </body>
 </html>

@@ -50,7 +50,6 @@ If you have already cloned this repo and run `npm install`, confirm everything s
 
    This should pass with no errors.
 5. **Confirm Husky is working:** Make a small test commit (like editing this file with a comment). When you commit, you should see lint-staged run in your terminal. If it does, Husky is installed correctly. You can revert this commit afterward if you like.
-(Husky Test Run)
 
 6. **Enable GitHub notifications:** Go to your repo on GitHub, click the **Watch** dropdown (top right), and select **All Activity**. Your instructor delivers weekly updates as Issues and Pull Requests — this ensures you see them. See [docs/course/weekly-updates-how-it-works.md](course/weekly-updates-how-it-works.md) for the full workflow.
 

@@ -5,6 +5,276 @@
   --color-accent: hsl(220, 70%, 50%);
   --color-muted: hsl(220, 10%, 60%);
 }
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+/* Base */
+body {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  line-height: 1.6;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1;
+  padding: 2rem 1rem;
+  max-width: 40rem;
+  margin: 0 auto;
+  width: 100%;
+}
+header {
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+footer {
+  padding: 1rem;
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+/* Mobile-first — add min-width queries as needed */
+/*
+  Cozy Retro Records Theme
+  All colors use CSS custom properties in :root
+*/
+:root {
+  --color-bg: hsl(32, 40%, 96%);
+  --color-card: hsl(24, 35%, 92%);
+  --color-primary: hsl(18, 60%, 55%);
+  --color-accent: hsl(340, 60%, 70%);
+  --color-dark: hsl(24, 20%, 25%);
+  --color-muted: hsl(200, 20%, 80%);
+  --color-focus: hsl(200, 80%, 60%);
+  --color-shadow: hsla(24, 20%, 25%, 0.08);
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 18px;
+  background: var(--color-bg);
+  color: var(--color-dark);
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  background: var(--color-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+header.hero {
+  background: var(--color-card);
+  padding: 2rem 1rem 1rem 1rem;
+  border-bottom: 2px solid var(--color-muted);
+  text-align: center;
+  border-radius: 0 0 2rem 2rem;
+  box-shadow: 0 2px 8px var(--color-shadow);
+}
+header.hero h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-primary);
+  text-shadow: 1px 2px 0 var(--color-muted);
+}
+header.hero .subtitle {
+  font-size: 1.1rem;
+  color: var(--color-dark);
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+.preferences-card {
+  background: var(--color-card);
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 8px var(--color-shadow);
+  padding: 1.5rem 1rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 420px;
+}
+.form-group {
+  margin-bottom: 1.1rem;
+  display: flex;
+  flex-direction: column;
+}
+label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--color-dark);
+}
+select {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-muted);
+  background: #fff;
+  font-size: 1rem;
+  color: var(--color-dark);
+}
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+button {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.6rem 1.3rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 4px var(--color-shadow);
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+button:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+button:hover {
+  background: var(--color-accent);
+  transform: scale(1.04);
+}
+.results-section {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+#recommendations {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+}
+.song-card {
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 8px var(--color-shadow);
+  padding: 1.1rem 1rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  border-left: 6px solid var(--color-primary);
+  position: relative;
+}
+.song-card .song-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.song-card .song-artist {
+  font-size: 1rem;
+  color: var(--color-dark);
+  opacity: 0.85;
+}
+.song-card .song-meta {
+  font-size: 0.95rem;
+  color: var(--color-dark);
+  opacity: 0.7;
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+.song-card .match-score {
+  font-size: 0.9rem;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+#random-pick-area {
+  margin: 1.5rem 0 0.5rem 0;
+  min-height: 3.5rem;
+}
+.random-pick-card {
+  background: var(--color-accent);
+  color: var(--color-dark);
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 12px var(--color-shadow);
+  padding: 1.2rem 1rem 1rem 1rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-left: 8px solid var(--color-primary);
+  position: relative;
+}
+.random-pick-card .record-icon {
+  position: absolute;
+  top: -1.2rem;
+  right: 1.2rem;
+  font-size: 2.2rem;
+  filter: drop-shadow(0 2px 4px var(--color-shadow));
+}
+.random-pick-card .song-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-dark);
+}
+.random-pick-card .song-artist {
+  font-size: 1rem;
+  color: var(--color-dark);
+  opacity: 0.85;
+}
+.random-pick-card .song-meta {
+  font-size: 0.98rem;
+  color: var(--color-dark);
+  opacity: 0.8;
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+footer {
+  text-align: center;
+  padding: 1.2rem 0 0.7rem 0;
+  color: var(--color-dark);
+  opacity: 0.7;
+  font-size: 1rem;
+}
+@media (min-width: 600px) {
+  main {
+    padding: 2rem 0;
+  }
+  .results-section {
+    margin-top: 1.5rem;
+  }
+  #recommendations {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+/* Custom properties — use hsl() for all colors */
+:root {
+  --color-text: hsl(220, 15%, 20%);
+  --color-bg: hsl(220, 15%, 97%);
+  --color-accent: hsl(220, 70%, 50%);
+  --color-muted: hsl(220, 10%, 60%);
+}
 
 /* Reset */
 *,
@@ -17,7 +287,10 @@
 
 /* Base */
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: var(--color-text);
   background-color: var(--color-bg);
   line-height: 1.6;
