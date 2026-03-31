@@ -2,10 +2,10 @@
 import { songs } from './data.js';
 import { meetsAllCriteria, getMatchScore } from './matching.js';
 
-const form = document.getElementById('preferences-form');
-const recommendationsDiv = document.getElementById('recommendations');
-const randomPickBtn = document.getElementById('random-pick');
-const randomPickArea = document.getElementById('random-pick-area');
+const form = document.querySelector('#preferences-form');
+const recommendationsDiv = document.querySelector('#recommendations');
+const randomPickBtn = document.querySelector('#random-pick');
+const randomPickArea = document.querySelector('#random-pick-area');
 
 function getPreferences() {
   const vibe = form.vibe.value;
