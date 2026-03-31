@@ -3,6 +3,7 @@
 ## About this student
 
 JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify. Has NOT done DOM, async, or APIs yet.
+This student is now learning DOM manipulation.
 
 ## How to help
 
