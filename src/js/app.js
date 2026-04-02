@@ -39,7 +39,7 @@ function matchScoreLabel(score) {
 function renderRecommendations(matches, prefs) {
   recommendationsDiv.innerHTML = ''; // This instance of innerHTML is safe because it's only used to clear existing content before appending new elements.
   if (!songs.length) {
-    recommendationsDiv.innerHTML = `<div class="song-card">No songs available. Try again later!</div>`;
+    recommendationsDiv.innerHTML = `<div class="song-card">No songs available. Try again later!</div>`; // This instance of innerHTML is safe because it is hardcoded
     return;
   }
   if (!matches.length) {
@@ -92,7 +92,7 @@ function renderRecommendations(matches, prefs) {
 
 function renderRandomPick(song) {
   if (!song) {
-    randomPickArea.innerHTML = `<div class="random-pick-card">No matches to spin! Try loosening your filters.</div>`;
+    randomPickArea.innerHTML = `<div class="random-pick-card">No matches to spin! Try loosening your filters.</div>`; //This instance of innerHTML is safe because it is hardcoded
     return;
   }
   randomPickArea.innerHTML = '';
@@ -148,7 +148,7 @@ function getFilteredSongs(prefs) {
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
-  randomPickArea.innerHTML = '';
+  randomPickArea.innerHTML = ''; // This instance of innerHTML is safe because it's only used to clear existing content before appending new elements.
   const prefs = getPreferences();
   const matches = getFilteredSongs(prefs);
   renderRecommendations(matches, prefs);
