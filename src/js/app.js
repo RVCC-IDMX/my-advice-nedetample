@@ -37,7 +37,7 @@ function matchScoreLabel(score) {
 }
 
 function renderRecommendations(matches, prefs) {
-  recommendationsDiv.innerHTML = '';
+  recommendationsDiv.innerHTML = ''; // This instance of innerHTML is safe because it's only used to clear existing content before appending new elements.
   if (!songs.length) {
     recommendationsDiv.innerHTML = `<div class="song-card">No songs available. Try again later!</div>`;
     return;
@@ -50,17 +50,42 @@ function renderRecommendations(matches, prefs) {
     const score = getMatchScore(song, prefs);
     const card = document.createElement('div');
     card.className = 'song-card';
-    card.innerHTML = `
-      <div class="song-title">${song.title}</div>
-      <div class="song-artist">${song.artist}</div>
-      <div class="song-meta">
-        <span>${song.activity}</span>
-        <span>${song.vibe}</span>
-        <span>${song.genre}</span>
-        <span>${formatDuration(song.durationSeconds)}</span>
-      </div>
-      <div class="match-score">${matchScoreLabel(score)}</div>
-    `;
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'song-title';
+    titleDiv.textContent = song.title;
+
+    const artistDiv = document.createElement('div');
+    artistDiv.className = 'song-artist';
+    artistDiv.textContent = song.artist;
+
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'song-meta';
+
+    const activitySpan = document.createElement('span');
+    activitySpan.textContent = song.activity;
+
+    const vibeSpan = document.createElement('span');
+    vibeSpan.textContent = song.vibe;
+
+    const genreSpan = document.createElement('span');
+    genreSpan.textContent = song.genre;
+
+    const durationSpan = document.createElement('span');
+    durationSpan.textContent = formatDuration(song.durationSeconds);
+
+    metaDiv.appendChild(activitySpan);
+    metaDiv.appendChild(vibeSpan);
+    metaDiv.appendChild(genreSpan);
+    metaDiv.appendChild(durationSpan);
+
+    const matchScoreDiv = document.createElement('div');
+    matchScoreDiv.className = 'match-score';
+    matchScoreDiv.textContent = matchScoreLabel(score);
+
+    card.appendChild(titleDiv);
+    card.appendChild(artistDiv);
+    card.appendChild(metaDiv);
+    card.appendChild(matchScoreDiv);
     recommendationsDiv.appendChild(card);
   });
 }
@@ -70,19 +95,51 @@ function renderRandomPick(song) {
     randomPickArea.innerHTML = `<div class="random-pick-card">No matches to spin! Try loosening your filters.</div>`;
     return;
   }
-  randomPickArea.innerHTML = `
-    <div class="random-pick-card">
-      <span class="record-icon" aria-label="vinyl record" role="img">&#127925;</span>
-      <div class="song-title">${song.title}</div>
-      <div class="song-artist">${song.artist}</div>
-      <div class="song-meta">
-        <span>${song.activity}</span>
-        <span>${song.vibe}</span>
-        <span>${song.genre}</span>
-        <span>${formatDuration(song.durationSeconds)}</span>
-      </div>
-    </div>
-  `;
+  randomPickArea.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'random-pick-card';
+
+  const recordIcon = document.createElement('span');
+  recordIcon.className = 'record-icon';
+  recordIcon.setAttribute('aria-label', 'vinyl record');
+  recordIcon.setAttribute('role', 'img');
+  recordIcon.textContent = '🎵';
+
+  const titleDiv = document.createElement('div');
+  titleDiv.className = 'song-title';
+  titleDiv.textContent = song.title;
+
+  const artistDiv = document.createElement('div');
+  artistDiv.className = 'song-artist';
+  artistDiv.textContent = song.artist;
+
+  const metaDiv = document.createElement('div');
+  metaDiv.className = 'song-meta';
+
+  const activitySpan = document.createElement('span');
+  activitySpan.textContent = song.activity;
+
+  const vibeSpan = document.createElement('span');
+  vibeSpan.textContent = song.vibe;
+
+  const genreSpan = document.createElement('span');
+  genreSpan.textContent = song.genre;
+
+  const durationSpan = document.createElement('span');
+  durationSpan.textContent = formatDuration(song.durationSeconds);
+
+  metaDiv.appendChild(activitySpan);
+  metaDiv.appendChild(vibeSpan);
+  metaDiv.appendChild(genreSpan);
+  metaDiv.appendChild(durationSpan);
+
+  card.appendChild(recordIcon);
+  card.appendChild(titleDiv);
+  card.appendChild(artistDiv);
+  card.appendChild(metaDiv);
+
+  randomPickArea.appendChild(card);
 }
 
 function getFilteredSongs(prefs) {
