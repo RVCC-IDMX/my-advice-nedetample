@@ -43,7 +43,7 @@ function renderRecommendations(matches, prefs) {
     return;
   }
   if (!matches.length) {
-    recommendationsDiv.innerHTML = `<div class="song-card">No matches found. Try loosening your filters or spinning the record!</div>`;
+    recommendationsDiv.innerHTML = `<div class="song-card">No matches found. Try loosening your filters or spinning the record!</div>`; // This instance of innerHTML is safe because it is hardcoded
     return;
   }
   matches.forEach((song) => {
