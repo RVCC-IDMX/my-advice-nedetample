@@ -2,8 +2,7 @@
 
 ## About this student
 
-JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify. Has NOT done DOM, async, or APIs yet.
-This student is now learning DOM manipulation.
+JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation (using querySelector, textContent, classList, appendChild, and createElement). Has NOT done async or APIs yet.
 
 ## How to help
 
@@ -64,3 +63,5 @@ src/css/style.css    ← all styles
 - Whenever suggesting to or installing a new library, give a rundown of what it does and how.
 - When asking questions, only ask one at a time and give a breif example of what a helpful answer looks like to you.
 - For the syle of this project, keep things minimalistic and cozy
+- Alert me of any potential security risks that code you suggest may allow
+- Always avoid using innerHTML and getElementID. If neccesary ask my permission and explain why it is the only option first
