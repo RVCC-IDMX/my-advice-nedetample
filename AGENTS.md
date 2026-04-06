@@ -2,7 +2,7 @@
 
 ## About this student
 
-JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation (using querySelector, textContent, classList, appendChild, and createElement). Has NOT done async or APIs yet.
+JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation (using querySelector, textContent, classList, appendChild, and createElement). Has NOT done async or APIs yet. This student is about to learn events and view functions.
 
 ## How to help
 
@@ -13,6 +13,12 @@ JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/e
 - **Never silently fix bugs.** Explain what was wrong and why.
 
 ## Code rules
+
+- Use querySelector over getElementById
+- Use textContent over innerText
+- Use addEventListener over onclick
+- Use classList.toggle() for switching classes
+- Use .dataset for data attributes
 
 ### JavaScript
 
