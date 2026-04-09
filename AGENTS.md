@@ -2,7 +2,7 @@
 
 ## About this student
 
-JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation (using querySelector, textContent, classList, appendChild, and createElement). Has NOT done async or APIs yet. This student is about to learn events and view functions.
+JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation (using querySelector, textContent, classList, appendChild, and createElement), event listeners and handlers. Has NOT done async or APIs yet.
 
 ## How to help
 
@@ -71,3 +71,5 @@ src/css/style.css    ← all styles
 - For the syle of this project, keep things minimalistic and cozy
 - Alert me of any potential security risks that code you suggest may allow
 - Always avoid using innerHTML and getElementID. If neccesary ask my permission and explain why it is the only option first
+- When generating code, show exactly where it would go and provide line numbers and file names
+- Always use event delegation for handling clicks on dynamic cards instead of adding individual event listeners to each element.
