@@ -1,6 +1,8 @@
 // App logic and DOM wiring for What Should I Listen To?
 import { songs } from './data.js';
 import { meetsAllCriteria, getMatchScore } from './matching.js';
+import { showResults, showNoResults, showDetail } from './views.js';
+export { matchScoreLabel };
 
 const form = document.querySelector('#preferences-form');
 const recommendationsDiv = document.querySelector('#recommendations');
@@ -37,56 +39,33 @@ function matchScoreLabel(score) {
 }
 
 function renderRecommendations(matches, prefs) {
-  recommendationsDiv.innerHTML = ''; // This instance of innerHTML is safe because it's only used to clear existing content before appending new elements.
+  recommendationsDiv.innerHTML = '';
   if (!songs.length) {
-    recommendationsDiv.innerHTML = `<div class="song-card">No songs available. Try again later!</div>`; // This instance of innerHTML is safe because it is hardcoded
+    recommendationsDiv.innerHTML = `<div class="song-card">No songs available. Try again later!</div>`;
     return;
   }
   if (!matches.length) {
-    recommendationsDiv.innerHTML = `<div class="song-card">No matches found. Try loosening your filters or spinning the record!</div>`; // This instance of innerHTML is safe because it is hardcoded
+    showNoResults(recommendationsDiv);
     return;
   }
-  matches.forEach((song) => {
-    const score = getMatchScore(song, prefs);
-    const card = document.createElement('div');
-    card.className = 'song-card';
-    const titleDiv = document.createElement('div');
-    titleDiv.className = 'song-title';
-    titleDiv.textContent = song.title;
+  // Attach matchScore to each song and sort
+  const scored = matches
+    .map((song) => ({
+      ...song,
+      matchScore: getMatchScore(song, prefs),
+    }))
+    .sort((a, b) => b.matchScore - a.matchScore);
+  showResults(scored, recommendationsDiv);
 
-    const artistDiv = document.createElement('div');
-    artistDiv.className = 'song-artist';
-    artistDiv.textContent = song.artist;
-
-    const metaDiv = document.createElement('div');
-    metaDiv.className = 'song-meta';
-
-    const activitySpan = document.createElement('span');
-    activitySpan.textContent = song.activity;
-
-    const vibeSpan = document.createElement('span');
-    vibeSpan.textContent = song.vibe;
-
-    const genreSpan = document.createElement('span');
-    genreSpan.textContent = song.genre;
-
-    const durationSpan = document.createElement('span');
-    durationSpan.textContent = formatDuration(song.durationSeconds);
-
-    metaDiv.appendChild(activitySpan);
-    metaDiv.appendChild(vibeSpan);
-    metaDiv.appendChild(genreSpan);
-    metaDiv.appendChild(durationSpan);
-
-    const matchScoreDiv = document.createElement('div');
-    matchScoreDiv.className = 'match-score';
-    matchScoreDiv.textContent = matchScoreLabel(score);
-
-    card.appendChild(titleDiv);
-    card.appendChild(artistDiv);
-    card.appendChild(metaDiv);
-    card.appendChild(matchScoreDiv);
-    recommendationsDiv.appendChild(card);
+  const detailDiv = document.querySelector('#detail-view');
+  const cards = recommendationsDiv.querySelectorAll('.song-card');
+  cards.forEach((card, i) => {
+    card.addEventListener('click', () => {
+      recommendationsDiv.classList.add('hidden');
+      if (detailDiv) {
+        showDetail(scored[i], detailDiv);
+      }
+    });
   });
 }
 
@@ -148,7 +127,7 @@ function getFilteredSongs(prefs) {
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
-  randomPickArea.innerHTML = ''; // This instance of innerHTML is safe because it's only used to clear existing content before appending new elements.
+  randomPickArea.innerHTML = '';
   const prefs = getPreferences();
   const matches = getFilteredSongs(prefs);
   renderRecommendations(matches, prefs);

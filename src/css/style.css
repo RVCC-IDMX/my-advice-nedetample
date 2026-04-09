@@ -319,4 +319,8 @@ footer {
   font-size: 0.875rem;
 }
 
+.hidden {
+  display: none;
+}
+
 /* Mobile-first — add min-width queries as needed */
