@@ -1,3 +1,17 @@
+// Named handler for back button in detail view
+export function handleBackClick() {
+  const recommendationsDiv = document.querySelector('#recommendations');
+  const detailDiv = document.querySelector('#detail-view');
+  if (detailDiv) detailDiv.classList.add('hidden');
+  if (recommendationsDiv) recommendationsDiv.classList.remove('hidden');
+  // Restore last results
+  if (renderRecommendations.lastResults) {
+    showResults(renderRecommendations.lastResults, recommendationsDiv);
+  }
+}
+
+// Make handler available globally for views.js
+window.handleBackClick = handleBackClick;
 // App logic and DOM wiring for What Should I Listen To?
 import { songs } from './data.js';
 import { meetsAllCriteria, getMatchScore } from './matching.js';
@@ -56,17 +70,26 @@ function renderRecommendations(matches, prefs) {
     }))
     .sort((a, b) => b.matchScore - a.matchScore);
   showResults(scored, recommendationsDiv);
+  // Store last results for event delegation
+  renderRecommendations.lastResults = scored;
+}
 
-  const detailDiv = document.querySelector('#detail-view');
-  const cards = recommendationsDiv.querySelectorAll('.song-card');
-  cards.forEach((card, i) => {
-    card.addEventListener('click', () => {
-      recommendationsDiv.classList.add('hidden');
-      if (detailDiv) {
-        showDetail(scored[i], detailDiv);
-      }
-    });
-  });
+// Event delegation for card clicks
+const detailDiv = document.querySelector('#detail-view');
+recommendationsDiv.addEventListener('click', handleCardClick);
+
+function handleCardClick(event) {
+  const card = event.target.closest('.song-card');
+  if (!card) return;
+  const title = card.dataset.title;
+  // Find the item in the last results array
+  const item = renderRecommendations.lastResults?.find(
+    (song) => song.title === title
+  );
+  if (item && detailDiv) {
+    recommendationsDiv.classList.add('hidden');
+    showDetail(item, detailDiv);
+  }
 }
 
 function renderRandomPick(song) {
@@ -125,6 +148,7 @@ function getFilteredSongs(prefs) {
   return songs.filter((song) => meetsAllCriteria(song, prefs));
 }
 
+// Reacts to the form's submission, gets user preferences, filters songs, and updates recommendations.
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   randomPickArea.innerHTML = '';

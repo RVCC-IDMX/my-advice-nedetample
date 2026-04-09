@@ -9,6 +9,7 @@ function showResults(items, container) {
   for (const item of items) {
     const card = document.createElement('div');
     card.className = 'song-card';
+    card.dataset.title = item.title;
 
     const titleDiv = document.createElement('div');
     titleDiv.className = 'song-title';
@@ -97,6 +98,15 @@ function showDetail(item, container) {
   detail.appendChild(titleDiv);
   detail.appendChild(artistDiv);
   detail.appendChild(metaDiv);
+
+  // Add back button
+  const backButton = document.createElement('button');
+  backButton.type = 'button';
+  backButton.textContent = 'Back';
+  backButton.className = 'back-btn';
+  backButton.addEventListener('click', window.handleBackClick);
+  detail.appendChild(backButton);
+
   container.appendChild(detail);
 }
 
