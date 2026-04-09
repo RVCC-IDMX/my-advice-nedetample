@@ -1,3 +1,64 @@
+.song-detail .song-meta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+/* Modal overlay for detail view */
+#detail-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(30, 34, 45, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.2s;
+}
+
+#detail-view.hidden {
+  display: none;
+}
+
+.song-detail {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 32px 0 rgba(0, 0, 0, 0.18);
+  padding: 2.5rem 2rem 2rem 2rem;
+  min-width: 320px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 3px solid var(--color-accent);
+}
+
+.back-btn {
+  margin-top: 2rem;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+  transition: background 0.2s;
+}
+.back-btn:focus,
+.back-btn:hover {
+  background: hsl(220, 70%, 40%);
+  outline: 2px solid var(--color-accent);
+}
 /* Custom properties — use hsl() for all colors */
 :root {
   --color-text: hsl(220, 15%, 20%);
