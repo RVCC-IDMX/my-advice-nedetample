@@ -10,8 +10,6 @@ export function handleBackClick() {
   }
 }
 
-// Make handler available globally for views.js
-window.handleBackClick = handleBackClick;
 // App logic and DOM wiring for What Should I Listen To?
 import { songs } from './data.js';
 import { meetsAllCriteria, getMatchScore } from './matching.js';
@@ -55,7 +53,10 @@ function matchScoreLabel(score) {
 function renderRecommendations(matches, prefs) {
   recommendationsDiv.innerHTML = '';
   if (!songs.length) {
-    recommendationsDiv.innerHTML = `<div class="song-card">No songs available. Try again later!</div>`;
+    const message = document.createElement('div');
+    message.className = 'song-card';
+    message.textContent = 'No songs available. Try again later!';
+    recommendationsDiv.append(message);
     return;
   }
   if (!matches.length) {
@@ -79,6 +80,17 @@ const detailDiv = document.querySelector('#detail-view');
 recommendationsDiv.addEventListener('click', handleCardClick);
 
 function handleCardClick(event) {
+  const backButton = event.target.closest('.back-btn');
+  if (backButton) {
+    // Restore previous results
+    if (detailDiv) detailDiv.classList.add('hidden');
+    if (recommendationsDiv) recommendationsDiv.classList.remove('hidden');
+    if (renderRecommendations.lastResults) {
+      showResults(renderRecommendations.lastResults, recommendationsDiv);
+    }
+    return;
+  }
+
   const card = event.target.closest('.song-card');
   if (!card) return;
   const title = card.dataset.title;
@@ -94,7 +106,11 @@ function handleCardClick(event) {
 
 function renderRandomPick(song) {
   if (!song) {
-    randomPickArea.innerHTML = `<div class="random-pick-card">No matches to spin! Try loosening your filters.</div>`; //This instance of innerHTML is safe because it is hardcoded
+    randomPickArea.innerHTML = '';
+    const message = document.createElement('div');
+    message.className = 'random-pick-card';
+    message.textContent = 'No matches to spin! Try loosening your filters.';
+    randomPickArea.append(message);
     return;
   }
   randomPickArea.innerHTML = '';

@@ -13,7 +13,6 @@ For each file, write one sentence about what it does.
 | `src/js/app.js`         |Connects user input and matching functions to generate and filter recommendations|
 | `src/js/matching.js`    |Contains the functions responsible for matching the best fit recommendations|
 | `src/js/data.js`        |Contains the information/categorys for each song|
-| `src/js/experiments.js` |Tests new functions with DOM manipulation|
 | `src/css/style.css`     |Defines the styling rules and layout|
 | `index.html`            |Sets up the main layout and preference form in HTML|
 
@@ -39,8 +38,8 @@ Look at your `index.html` and find the form element.
 
 Where do results appear on the page?
 
-- Container ID or class: `#results-section`
-- What element type is it? (`div`, `section`, etc.): `section`
+- Container ID or class: `#recommendations`
+- What element type is it? (`div`, `section`, etc.): `div`
 
 ---
 
@@ -66,7 +65,10 @@ Look through your app.js for any `addEventListener` calls. List each one.
 | Where in the code | Event type | What it does |
 | ----------------- | ---------- | ------------ |
 |       Line 149    |   submit   | Recongnizes when the user submits their preference form and runs the recommendation generator. 
-|       Line 157    |  click     | Runs the random song getter when the button is clicked
+|       Line 157    |  click     | Runs the random song getter when the button is clicked.
+|       Line 177    |  click     | Adds badges to each card of their number.
+|       Line 79     |  click     | Runs function to show cards' detailed view. 
+
 
 If you do not see any `addEventListener` calls, write "none found" — and then look again, because the form handler uses one.
 
@@ -76,7 +78,7 @@ If you do not see any `addEventListener` calls, write "none found" — and then 
 
 Open `src/js/data.js` and look at one item in your dataset.
 
-- How many items total? `6`
+- How many items total? `20`
 
 - Properties on each item
 
@@ -85,15 +87,16 @@ Open `src/js/data.js` and look at one item in your dataset.
   - activity
   - vibe
   - genre
-  - duration
+  - durationSeconds
 
 ---
 
 ## CSS classes for show/hide
 
+
 Do you have a `.hidden` class or similar in your CSS? If so, what does it do?
 
-- Class name: `N/A`
-- What CSS rule does it apply? `N/A`
+- Class name: `.hidden`
+- What CSS rule does it apply? `display: none;`
 
 If you do not have one, you will create one this week.

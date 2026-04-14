@@ -104,7 +104,6 @@ function showDetail(item, container) {
   backButton.type = 'button';
   backButton.textContent = 'Back';
   backButton.className = 'back-btn';
-  backButton.addEventListener('click', window.handleBackClick);
   detail.appendChild(backButton);
 
   container.appendChild(detail);
