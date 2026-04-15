@@ -33,23 +33,23 @@ function showResults(items, container) {
       ? formatDuration(item.durationSeconds)
       : '';
 
-    metaDiv.appendChild(activitySpan);
-    metaDiv.appendChild(vibeSpan);
-    metaDiv.appendChild(genreSpan);
-    metaDiv.appendChild(durationSpan);
+    metaDiv.append(activitySpan);
+    metaDiv.append(vibeSpan);
+    metaDiv.append(genreSpan);
+    metaDiv.append(durationSpan);
 
-    card.appendChild(titleDiv);
-    card.appendChild(artistDiv);
-    card.appendChild(metaDiv);
+    card.append(titleDiv);
+    card.append(artistDiv);
+    card.append(metaDiv);
     // Add match score label if present
     if (typeof item.matchScore === 'number') {
       const scoreDiv = document.createElement('div');
       scoreDiv.className = 'match-score';
       scoreDiv.textContent = matchScoreLabel(item.matchScore);
-      card.appendChild(scoreDiv);
+      card.append(scoreDiv);
     }
     // No click handler here; handled in app.js
-    container.appendChild(card);
+    container.append(card);
   }
 }
 
@@ -59,7 +59,7 @@ function showNoResults(container) {
   const msg = document.createElement('div');
   msg.className = 'song-card';
   msg.textContent = 'No matches found. Try loosening your filters!';
-  container.appendChild(msg);
+  container.append(msg);
 }
 
 function showDetail(item, container) {
@@ -90,23 +90,23 @@ function showDetail(item, container) {
     ? formatDuration(item.durationSeconds)
     : '';
 
-  metaDiv.appendChild(activitySpan);
-  metaDiv.appendChild(vibeSpan);
-  metaDiv.appendChild(genreSpan);
-  metaDiv.appendChild(durationSpan);
+  metaDiv.append(activitySpan);
+  metaDiv.append(vibeSpan);
+  metaDiv.append(genreSpan);
+  metaDiv.append(durationSpan);
 
-  detail.appendChild(titleDiv);
-  detail.appendChild(artistDiv);
-  detail.appendChild(metaDiv);
+  detail.append(titleDiv);
+  detail.append(artistDiv);
+  detail.append(metaDiv);
 
   // Add back button
   const backButton = document.createElement('button');
   backButton.type = 'button';
   backButton.textContent = 'Back';
   backButton.className = 'back-btn';
-  detail.appendChild(backButton);
+  detail.append(backButton);
 
-  container.appendChild(detail);
+  container.append(detail);
 }
 
 // Helper for formatting duration (copied from app.js, or import if available, precautionary from AI agent)

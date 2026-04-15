@@ -51,7 +51,7 @@ function matchScoreLabel(score) {
 }
 
 function renderRecommendations(matches, prefs) {
-  recommendationsDiv.innerHTML = '';
+  recommendationsDiv.textContent = '';
   if (!songs.length) {
     const message = document.createElement('div');
     message.className = 'song-card';
@@ -106,14 +106,14 @@ function handleCardClick(event) {
 
 function renderRandomPick(song) {
   if (!song) {
-    randomPickArea.innerHTML = '';
+    randomPickArea.textContent = '';
     const message = document.createElement('div');
     message.className = 'random-pick-card';
     message.textContent = 'No matches to spin! Try loosening your filters.';
     randomPickArea.append(message);
     return;
   }
-  randomPickArea.innerHTML = '';
+  randomPickArea.textContent = '';
 
   const card = document.createElement('div');
   card.className = 'random-pick-card';
@@ -147,17 +147,17 @@ function renderRandomPick(song) {
   const durationSpan = document.createElement('span');
   durationSpan.textContent = formatDuration(song.durationSeconds);
 
-  metaDiv.appendChild(activitySpan);
-  metaDiv.appendChild(vibeSpan);
-  metaDiv.appendChild(genreSpan);
-  metaDiv.appendChild(durationSpan);
+  metaDiv.append(activitySpan);
+  metaDiv.append(vibeSpan);
+  metaDiv.append(genreSpan);
+  metaDiv.append(durationSpan);
 
-  card.appendChild(recordIcon);
-  card.appendChild(titleDiv);
-  card.appendChild(artistDiv);
-  card.appendChild(metaDiv);
+  card.append(recordIcon);
+  card.append(titleDiv);
+  card.append(artistDiv);
+  card.append(metaDiv);
 
-  randomPickArea.appendChild(card);
+  randomPickArea.append(card);
 }
 
 function getFilteredSongs(prefs) {
@@ -167,7 +167,7 @@ function getFilteredSongs(prefs) {
 // Reacts to the form's submission, gets user preferences, filters songs, and updates recommendations.
 form.addEventListener('submit', (e) => {
   e.preventDefault();
-  randomPickArea.innerHTML = '';
+  randomPickArea.textContent = '';
   const prefs = getPreferences();
   const matches = getFilteredSongs(prefs);
   renderRecommendations(matches, prefs);
@@ -195,13 +195,13 @@ getRecommendationsBttn.addEventListener('click', () => {
     const allOptions = document.querySelectorAll('#recommendations .song-card');
     console.log(`This page has ${allOptions.length} recommendations`);
 
-    allOptions.forEach((card, index) => {
+    for (const [index, card] of allOptions.entries()) {
       card.classList.add('experiment-border');
       const badge = document.createElement('span');
       badge.textContent = `#${index + 1}`;
       badge.className = 'card-badge';
       card.prepend(badge);
-    });
+    }
   }, 0);
 });
 
@@ -220,10 +220,10 @@ if (subtitle) {
 let footer = document.querySelector('footer');
 if (!footer) {
   footer = document.createElement('footer');
-  document.body.appendChild(footer);
+  document.body.append(footer);
 }
 const link = document.createElement('a');
 link.href = 'https://github.com/nedetample';
 link.textContent = 'Visit my GitHub';
 link.target = '_blank';
-footer.appendChild(link);
+footer.append(link);
