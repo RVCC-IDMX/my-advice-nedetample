@@ -2,7 +2,7 @@
 
 ## About this student
 
-JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation (using querySelector, textContent, classList, appendChild, and createElement), event listeners and handlers. Has NOT done async or APIs yet.
+JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation (using querySelector, textContent, classList, appendChild, and createElement), event listeners and handlers. Has NOT done async or APIs yet. This student is learning about using the fetch funciton.
 
 ## How to help
 
@@ -73,3 +73,4 @@ src/css/style.css    ← all styles
 - Always avoid using innerHTML and getElementID. If neccesary ask my permission and explain why it is the only option first
 - When generating code, show exactly where it would go and provide line numbers and file names
 - Always use event delegation for handling clicks on dynamic cards instead of adding individual event listeners to each element.
+- When writing fetch code, always use async/await, run a response.ok check, use a try -> catch format, and turn the data into JSON.
