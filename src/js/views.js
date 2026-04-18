@@ -11,6 +11,25 @@ function showResults(items, container) {
     card.className = 'song-card';
     card.dataset.title = item.title;
 
+    // Album cover (defensive)
+    if (item.albumCover) {
+      const img = document.createElement('img');
+      img.src = item.albumCover;
+      img.alt = item.albumTitle
+        ? `Album cover for ${item.albumTitle}`
+        : 'Album cover';
+      img.className = 'album-cover';
+      card.append(img);
+    }
+
+    // Album title (defensive)
+    if (item.albumTitle) {
+      const albumDiv = document.createElement('div');
+      albumDiv.className = 'album-title';
+      albumDiv.textContent = item.albumTitle;
+      card.append(albumDiv);
+    }
+
     const titleDiv = document.createElement('div');
     titleDiv.className = 'song-title';
     titleDiv.textContent = item.title;
@@ -22,20 +41,24 @@ function showResults(items, container) {
     const metaDiv = document.createElement('div');
     metaDiv.className = 'song-meta';
 
-    const activitySpan = document.createElement('span');
-    activitySpan.textContent = item.activity;
-    const vibeSpan = document.createElement('span');
-    vibeSpan.textContent = item.vibe;
+    // Rank (from Deezer)
+    if (typeof item.rank === 'number') {
+      const rankSpan = document.createElement('span');
+      rankSpan.className = 'song-rank';
+      rankSpan.textContent = `Rank: ${item.rank}`;
+      metaDiv.append(rankSpan);
+    }
+
+    // Genre
     const genreSpan = document.createElement('span');
     genreSpan.textContent = item.genre;
+    metaDiv.append(genreSpan);
+
+    // Duration
     const durationSpan = document.createElement('span');
     durationSpan.textContent = item.durationSeconds
       ? formatDuration(item.durationSeconds)
       : '';
-
-    metaDiv.append(activitySpan);
-    metaDiv.append(vibeSpan);
-    metaDiv.append(genreSpan);
     metaDiv.append(durationSpan);
 
     card.append(titleDiv);
@@ -68,6 +91,25 @@ function showDetail(item, container) {
   const detail = document.createElement('div');
   detail.className = 'song-detail';
 
+  // Album cover (defensive)
+  if (item.albumCover) {
+    const img = document.createElement('img');
+    img.src = item.albumCover;
+    img.alt = item.albumTitle
+      ? `Album cover for ${item.albumTitle}`
+      : 'Album cover';
+    img.className = 'album-cover';
+    detail.append(img);
+  }
+
+  // Album title (defensive)
+  if (item.albumTitle) {
+    const albumDiv = document.createElement('div');
+    albumDiv.className = 'album-title';
+    albumDiv.textContent = item.albumTitle;
+    detail.append(albumDiv);
+  }
+
   const titleDiv = document.createElement('div');
   titleDiv.className = 'song-title';
   titleDiv.textContent = item.title;
@@ -79,20 +121,24 @@ function showDetail(item, container) {
   const metaDiv = document.createElement('div');
   metaDiv.className = 'song-meta';
 
-  const activitySpan = document.createElement('span');
-  activitySpan.textContent = item.activity;
-  const vibeSpan = document.createElement('span');
-  vibeSpan.textContent = item.vibe;
+  // Rank (from Deezer)
+  if (typeof item.rank === 'number') {
+    const rankSpan = document.createElement('span');
+    rankSpan.className = 'song-rank';
+    rankSpan.textContent = `Rank: ${item.rank}`;
+    metaDiv.append(rankSpan);
+  }
+
+  // Genre
   const genreSpan = document.createElement('span');
   genreSpan.textContent = item.genre;
+  metaDiv.append(genreSpan);
+
+  // Duration
   const durationSpan = document.createElement('span');
   durationSpan.textContent = item.durationSeconds
     ? formatDuration(item.durationSeconds)
     : '';
-
-  metaDiv.append(activitySpan);
-  metaDiv.append(vibeSpan);
-  metaDiv.append(genreSpan);
   metaDiv.append(durationSpan);
 
   detail.append(titleDiv);

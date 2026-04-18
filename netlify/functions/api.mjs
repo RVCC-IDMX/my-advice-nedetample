@@ -62,15 +62,25 @@ export default async () => {
             genreId = track.album.genre_id;
           }
           const genreName =
-            genreId && genreMap[genreId] ? genreMap[genreId] : '';
+            genreId && genreMap[genreId]
+              ? genreMap[genreId]
+              : track.genre_id || (track.album && track.album.genre_id) || '';
           return {
             title: track.title || '',
             artist: track.artist && track.artist.name ? track.artist.name : '',
-            activity: '', // Deezer does not provide this
-            vibe: '', // Deezer does not provide this
+            activity: '', // No activity from Deezer, left blank for now
+            rank: typeof track.rank === 'number' ? track.rank : null,
             genre: genreName,
             durationSeconds:
               typeof track.duration === 'number' ? track.duration : null,
+            albumCover:
+              (track.album &&
+                (track.album.cover_medium ||
+                  track.album.cover_big ||
+                  track.album.cover)) ||
+              '',
+            albumTitle:
+              track.album && track.album.title ? track.album.title : '',
           };
         })
       : [];

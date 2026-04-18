@@ -11,7 +11,34 @@ export function handleBackClick() {
 }
 
 // App logic and DOM wiring for What Should I Listen To?
-import { songs } from './data.js';
+let songs = [];
+// Fetch songs from serverless function
+async function fetchSongs() {
+  // Show loading state
+  recommendationsDiv.textContent = '';
+  const loading = document.createElement('div');
+  loading.className = 'song-card';
+  loading.textContent = 'Loading...';
+  recommendationsDiv.append(loading);
+  try {
+    const response = await fetch('/.netlify/functions/api');
+    if (!response.ok) {
+      throw new Error('Failed to fetch songs');
+    }
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      throw new Error('Invalid data format');
+    }
+    songs = data;
+  } catch (error) {
+    recommendationsDiv.textContent = '';
+    const message = document.createElement('div');
+    message.className = 'song-card';
+    message.textContent = `Error loading songs: ${error.message}`;
+    recommendationsDiv.append(message);
+    songs = [];
+  }
+}
 import { meetsAllCriteria, getMatchScore } from './matching.js';
 import { showResults, showNoResults, showDetail } from './views.js';
 export { matchScoreLabel };
@@ -22,11 +49,11 @@ const randomPickBtn = document.querySelector('#random-pick');
 const randomPickArea = document.querySelector('#random-pick-area');
 
 function getPreferences() {
-  const vibe = form.vibe.value;
   const time = form.time.value;
   const genre = form.genre.value;
   const activity = form.activity.value;
-  return { vibe, time, genre, activity };
+  const rank = form.rank ? form.rank.value : '';
+  return { time, genre, activity, rank };
 }
 
 function formatDuration(seconds) {
@@ -69,7 +96,8 @@ function renderRecommendations(matches, prefs) {
       ...song,
       matchScore: getMatchScore(song, prefs),
     }))
-    .sort((a, b) => b.matchScore - a.matchScore);
+    .sort((a, b) => b.matchScore - a.matchScore)
+    .slice(0, 20); // Only show the first 20 matches
   showResults(scored, recommendationsDiv);
   // Store last results for event delegation
   renderRecommendations.lastResults = scored;
@@ -165,15 +193,22 @@ function getFilteredSongs(prefs) {
 }
 
 // Reacts to the form's submission, gets user preferences, filters songs, and updates recommendations.
-form.addEventListener('submit', (e) => {
+
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
   randomPickArea.textContent = '';
+  if (!songs.length) {
+    await fetchSongs();
+  }
   const prefs = getPreferences();
   const matches = getFilteredSongs(prefs);
   renderRecommendations(matches, prefs);
 });
 
-randomPickBtn.addEventListener('click', () => {
+randomPickBtn.addEventListener('click', async () => {
+  if (!songs.length) {
+    await fetchSongs();
+  }
   const prefs = getPreferences();
   const matches = getFilteredSongs(prefs);
   let pick = null;
@@ -185,8 +220,13 @@ randomPickBtn.addEventListener('click', () => {
   renderRandomPick(pick);
 });
 
-// Initial render
-renderRecommendations(songs, getPreferences());
+// Initial render: fetch songs and then render
+
+// On initial load, fetch songs and show the first 20 (no filters)
+(async () => {
+  await fetchSongs();
+  renderRecommendations(songs.slice(0, 20), {});
+})();
 
 // Modify all cards to have a badge with their index number
 const getRecommendationsBttn = document.querySelector('#get-recs');
