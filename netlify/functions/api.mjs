@@ -38,7 +38,7 @@ export default async () => {
   };
   try {
     // Use a default query or get from query params (for now, use 'eminem' as example)
-    const query = 'eminem';
+    const query = 'top';
     const url = `https://api.deezer.com/search?q=${encodeURIComponent(query)}`;
     const response = await fetch(url);
     if (!response.ok) {
