@@ -1,68 +1,42 @@
-// Named handler for back button in detail view
-export function handleBackClick() {
-  const recommendationsDiv = document.querySelector('#recommendations');
-  const detailDiv = document.querySelector('#detail-view');
-  if (detailDiv) detailDiv.classList.add('hidden');
-  if (recommendationsDiv) recommendationsDiv.classList.remove('hidden');
-  // Restore last results
-  if (renderRecommendations.lastResults) {
-    showResults(renderRecommendations.lastResults, recommendationsDiv);
-  }
-}
-
-// App logic and DOM wiring for What Should I Listen To?
-let songs = [];
-// Fetch songs from serverless function
-async function fetchSongs() {
-  // Show loading state
-  recommendationsDiv.textContent = '';
-  const loading = document.createElement('div');
-  loading.className = 'song-card';
-  loading.textContent = 'Loading...';
-  recommendationsDiv.append(loading);
-  try {
-    const response = await fetch('/.netlify/functions/api');
-    if (!response.ok) {
-      throw new Error('Failed to fetch songs');
-    }
-    const data = await response.json();
-    if (!Array.isArray(data)) {
-      throw new Error('Invalid data format');
-    }
-    songs = data;
-  } catch (error) {
-    recommendationsDiv.textContent = '';
-    const message = document.createElement('div');
-    message.className = 'song-card';
-    message.textContent = `Error loading songs: ${error.message}`;
-    recommendationsDiv.append(message);
-    songs = [];
-  }
-}
+// Imports
 import { meetsAllCriteria, getMatchScore } from './matching.js';
 import { showResults, showNoResults, showDetail } from './views.js';
-export { matchScoreLabel };
 
-const form = document.querySelector('#preferences-form');
+// Global variables and DOM element queries
+let songs = [];
 const recommendationsDiv = document.querySelector('#recommendations');
+const form = document.querySelector('#preferences-form');
 const randomPickBtn = document.querySelector('#random-pick');
 const randomPickArea = document.querySelector('#random-pick-area');
+const detailDiv = document.querySelector('#detail-view');
+const getRecommendationsBttn = document.querySelector('#get-recs');
 
-function getPreferences() {
-  const time = form.time.value;
-  const genre = form.genre.value;
-  const activity = form.activity.value;
-  const rank = form.rank ? form.rank.value : '';
-  return { time, genre, activity, rank };
+// Utility Functions
+export function loadCache(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return parsed;
+  } catch {
+    localStorage.removeItem(key);
+    return null;
+  }
 }
 
-function formatDuration(seconds) {
-  const min = Math.floor(seconds / 60);
-  const sec = seconds % 60;
-  return `${min}:${sec.toString().padStart(2, '0')}`;
+export function saveCache(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Ignore localStorage errors
+  }
 }
 
-function matchScoreLabel(score) {
+export function matchScoreLabel(score) {
   switch (score) {
     case 4:
       return 'Perfect match';
@@ -73,10 +47,61 @@ function matchScoreLabel(score) {
     case 1:
       return 'Partial match';
     default:
-      return 'No match';
+      return '';
   }
 }
 
+function formatDuration(seconds) {
+  if (typeof seconds !== 'number' || Number.isNaN(seconds)) {
+    return '';
+  }
+  const min = Math.floor(seconds / 60);
+  const sec = seconds % 60;
+  return `${min}:${sec.toString().padStart(2, '0')}`;
+}
+
+// Data Fetching
+async function fetchSongs() {
+  recommendationsDiv.textContent = '';
+  const loading = document.createElement('div');
+  loading.className = 'song-card';
+  loading.textContent = 'Loading...';
+  recommendationsDiv.append(loading);
+  try {
+    const response = await fetch('/.netlify/functions/api');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      throw new Error('Invalid data format from API');
+    }
+    songs = data;
+    saveCache('songs', data);
+  } catch (error) {
+    recommendationsDiv.textContent = '';
+    const message = document.createElement('div');
+    message.className = 'song-card';
+    message.textContent = `Error loading songs: ${error.message}`;
+    recommendationsDiv.append(message);
+    songs = [];
+  }
+}
+
+// Filtering and Preferences
+function getPreferences() {
+  const time = form.time.value;
+  const genre = form.genre.value;
+  const activity = form.activity ? form.activity.value : '';
+  const rank = form.rank ? form.rank.value : '';
+  return { time, genre, activity, rank };
+}
+
+function getFilteredSongs(prefs) {
+  return songs.filter((song) => meetsAllCriteria(song, prefs));
+}
+
+// Rendering Functions
 function renderRecommendations(matches, prefs) {
   recommendationsDiv.textContent = '';
   if (!songs.length) {
@@ -90,58 +115,26 @@ function renderRecommendations(matches, prefs) {
     showNoResults(recommendationsDiv);
     return;
   }
-  // Attach matchScore to each song and sort
   const scored = matches
     .map((song) => ({
       ...song,
       matchScore: getMatchScore(song, prefs),
     }))
     .sort((a, b) => b.matchScore - a.matchScore)
-    .slice(0, 20); // Only show the first 20 matches
+    .slice(0, 20);
   showResults(scored, recommendationsDiv);
-  // Store last results for event delegation
   renderRecommendations.lastResults = scored;
 }
 
-// Event delegation for card clicks
-const detailDiv = document.querySelector('#detail-view');
-recommendationsDiv.addEventListener('click', handleCardClick);
-
-function handleCardClick(event) {
-  const backButton = event.target.closest('.back-btn');
-  if (backButton) {
-    // Restore previous results
-    if (detailDiv) detailDiv.classList.add('hidden');
-    if (recommendationsDiv) recommendationsDiv.classList.remove('hidden');
-    if (renderRecommendations.lastResults) {
-      showResults(renderRecommendations.lastResults, recommendationsDiv);
-    }
-    return;
-  }
-
-  const card = event.target.closest('.song-card');
-  if (!card) return;
-  const title = card.dataset.title;
-  // Find the item in the last results array
-  const item = renderRecommendations.lastResults?.find(
-    (song) => song.title === title
-  );
-  if (item && detailDiv) {
-    recommendationsDiv.classList.add('hidden');
-    showDetail(item, detailDiv);
-  }
-}
-
 function renderRandomPick(song) {
+  randomPickArea.textContent = '';
   if (!song) {
-    randomPickArea.textContent = '';
     const message = document.createElement('div');
     message.className = 'random-pick-card';
     message.textContent = 'No matches to spin! Try loosening your filters.';
     randomPickArea.append(message);
     return;
   }
-  randomPickArea.textContent = '';
 
   const card = document.createElement('div');
   card.className = 'random-pick-card';
@@ -164,106 +157,127 @@ function renderRandomPick(song) {
   metaDiv.className = 'song-meta';
 
   const activitySpan = document.createElement('span');
-  activitySpan.textContent = song.activity;
+  if (song.activity) activitySpan.textContent = song.activity;
 
   const vibeSpan = document.createElement('span');
-  vibeSpan.textContent = song.vibe;
+  if (song.vibe) vibeSpan.textContent = song.vibe;
 
   const genreSpan = document.createElement('span');
-  genreSpan.textContent = song.genre;
+  if (song.genre) genreSpan.textContent = song.genre;
 
   const durationSpan = document.createElement('span');
   durationSpan.textContent = formatDuration(song.durationSeconds);
 
-  metaDiv.append(activitySpan);
-  metaDiv.append(vibeSpan);
-  metaDiv.append(genreSpan);
-  metaDiv.append(durationSpan);
-
-  card.append(recordIcon);
-  card.append(titleDiv);
-  card.append(artistDiv);
-  card.append(metaDiv);
-
+  metaDiv.append(activitySpan, vibeSpan, genreSpan, durationSpan);
+  card.append(recordIcon, titleDiv, artistDiv, metaDiv);
   randomPickArea.append(card);
 }
 
-function getFilteredSongs(prefs) {
-  return songs.filter((song) => meetsAllCriteria(song, prefs));
+// Event Handlers
+function handleBackClick() {
+  if (detailDiv) detailDiv.classList.add('hidden');
+  if (recommendationsDiv) recommendationsDiv.classList.remove('hidden');
+  if (renderRecommendations.lastResults) {
+    showResults(renderRecommendations.lastResults, recommendationsDiv);
+  }
 }
 
-// Reacts to the form's submission, gets user preferences, filters songs, and updates recommendations.
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  randomPickArea.textContent = '';
-  if (!songs.length) {
-    await fetchSongs();
+function handleCardClick(event) {
+  const backButton = event.target.closest('.back-btn');
+  if (backButton) {
+    handleBackClick();
+    return;
   }
-  const prefs = getPreferences();
-  const matches = getFilteredSongs(prefs);
-  renderRecommendations(matches, prefs);
-});
 
-randomPickBtn.addEventListener('click', async () => {
-  if (!songs.length) {
-    await fetchSongs();
+  const card = event.target.closest('.song-card');
+  if (!card) return;
+  const title = card.dataset.title;
+  const item = renderRecommendations.lastResults?.find(
+    (song) => song.title === title
+  );
+  if (item && detailDiv) {
+    recommendationsDiv.classList.add('hidden');
+    showDetail(item, detailDiv);
   }
-  const prefs = getPreferences();
-  const matches = getFilteredSongs(prefs);
-  let pick = null;
-  if (matches.length) {
-    pick = matches[Math.floor(Math.random() * matches.length)];
-  } else if (songs.length) {
-    pick = songs[Math.floor(Math.random() * songs.length)];
-  }
-  renderRandomPick(pick);
-});
+}
 
-// Initial render: fetch songs and then render
-
-// On initial load, fetch songs and show the first 20 (no filters)
-(async () => {
-  await fetchSongs();
-  renderRecommendations(songs.slice(0, 20), {});
-})();
-
-// Modify all cards to have a badge with their index number
-const getRecommendationsBttn = document.querySelector('#get-recs');
-getRecommendationsBttn.addEventListener('click', () => {
-  setTimeout(() => {
-    const allOptions = document.querySelectorAll('#recommendations .song-card');
-    console.log(`This page has ${allOptions.length} recommendations`);
-
-    for (const [index, card] of allOptions.entries()) {
-      card.classList.add('experiment-border');
-      const badge = document.createElement('span');
-      badge.textContent = `#${index + 1}`;
-      badge.className = 'card-badge';
-      card.prepend(badge);
+// App Initialization
+document.addEventListener('DOMContentLoaded', () => {
+  // Attach Event Listeners
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    randomPickArea.textContent = '';
+    if (!songs.length) {
+      await fetchSongs();
     }
-  }, 0);
+    const prefs = getPreferences();
+    const matches = getFilteredSongs(prefs);
+    renderRecommendations(matches, prefs);
+  });
+
+  randomPickBtn.addEventListener('click', async () => {
+    if (!songs.length) {
+      await fetchSongs();
+    }
+    const prefs = getPreferences();
+    const matches = getFilteredSongs(prefs);
+    let pick = null;
+    if (matches.length) {
+      pick = matches[Math.floor(Math.random() * matches.length)];
+    } else if (songs.length) {
+      pick = songs[Math.floor(Math.random() * songs.length)];
+    }
+    renderRandomPick(pick);
+  });
+
+  recommendationsDiv.addEventListener('click', handleCardClick);
+
+  getRecommendationsBttn.addEventListener('click', () => {
+    setTimeout(() => {
+      const allOptions = document.querySelectorAll(
+        '#recommendations .song-card'
+      );
+      for (const [index, card] of allOptions.entries()) {
+        if (card.querySelector('.card-badge')) continue; // Don't add twice
+        card.classList.add('experiment-border');
+        const badge = document.createElement('span');
+        badge.textContent = `#${index + 1}`;
+        badge.className = 'card-badge';
+        card.prepend(badge);
+      }
+    }, 0);
+  });
+
+  // Initial Load
+  (async () => {
+    const cached = loadCache('songs');
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      songs = cached;
+      renderRecommendations(songs.slice(0, 20), {});
+    } else {
+      await fetchSongs();
+      renderRecommendations(songs.slice(0, 20), {});
+    }
+  })();
+
+  // Style/UI additions
+  const img = document.createElement('img');
+  img.src = 'src/images/spinningRecord.gif';
+  img.alt = 'Spinning record animation';
+  img.classList.add('banner-image');
+  const subtitle = document.querySelector('p.subtitle');
+  if (subtitle) {
+    subtitle.after(img);
+  }
+
+  let footer = document.querySelector('footer');
+  if (!footer) {
+    footer = document.createElement('footer');
+    document.body.append(footer);
+  }
+  const link = document.createElement('a');
+  link.href = 'https://github.com/nedetample';
+  link.textContent = 'Visit my GitHub';
+  link.target = '_blank';
+  footer.append(link);
 });
-
-// Adding a gif for style
-const img = document.createElement('img');
-img.src = 'src/images/spinningRecord.gif';
-img.alt = 'Spinning record animation';
-img.classList.add('banner-image');
-
-const subtitle = document.querySelector('p');
-if (subtitle) {
-  subtitle.after(img);
-}
-
-// Create a link as a footer
-let footer = document.querySelector('footer');
-if (!footer) {
-  footer = document.createElement('footer');
-  document.body.append(footer);
-}
-const link = document.createElement('a');
-link.href = 'https://github.com/nedetample';
-link.textContent = 'Visit my GitHub';
-link.target = '_blank';
-footer.append(link);

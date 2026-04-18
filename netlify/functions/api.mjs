@@ -71,8 +71,9 @@ export default async () => {
             activity: '', // No activity from Deezer, left blank for now
             rank: typeof track.rank === 'number' ? track.rank : null,
             genre: genreName,
-            durationSeconds:
-              typeof track.duration === 'number' ? track.duration : null,
+            durationSeconds: !isNaN(Number(track.duration))
+              ? Number(track.duration)
+              : null,
             albumCover:
               (track.album &&
                 (track.album.cover_medium ||

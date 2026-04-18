@@ -39,7 +39,13 @@ export function matchesGenre(song, genre) {
  * Returns true if the song fits within the selected time (in seconds), or if no time is selected.
  */
 export function fitsTimeAvailable(song, maxSeconds) {
-  return !maxSeconds || song.durationSeconds <= Number(maxSeconds);
+  if (!maxSeconds) return true;
+  if (
+    typeof song.durationSeconds !== 'number' ||
+    Number.isNaN(song.durationSeconds)
+  )
+    return false;
+  return song.durationSeconds <= Number(maxSeconds);
 }
 
 /**
