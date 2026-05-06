@@ -10,13 +10,23 @@
     <header class="hero">
       <h1>What Should I Listen To?</h1>
       <p class="subtitle">
-        Find the perfect song for your time and genre—retro record style!
+        Find a Deezer mix for your mood, then let Groq explain the picks.
       </p>
     </header>
     <main>
       <section class="preferences-card">
         <form id="preferences-form" autocomplete="off">
-          <!-- Vibe filter removed for Deezer API -->
+          <div class="form-group">
+            <label for="request">Describe the vibe</label>
+            <input
+              id="request"
+              name="request"
+              type="text"
+              maxlength="500"
+              placeholder="late-night synth pop for a solo drive"
+            />
+            <p class="form-help">Optional. Keep it under 500 characters.</p>
+          </div>
           <div class="form-group">
             <label for="time">Time available</label>
             <select id="time" name="time">
@@ -58,6 +68,7 @@
       </section>
       <section class="results-section">
         <h2>Recommendations</h2>
+        <div id="narration" aria-live="polite"></div>
         <div id="random-pick-area" aria-live="polite"></div>
         <div id="recommendations" aria-live="polite"></div>
       </section>

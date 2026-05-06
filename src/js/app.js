@@ -1,26 +1,34 @@
-// Imports
-import { meetsAllCriteria, getMatchScore } from './matching.js';
-import { showResults, showNoResults, showDetail } from './views.js';
+import {
+  showDetail,
+  showLoading,
+  showNoResults,
+  showNarration,
+  showRefusal,
+  showResults,
+  showStatus,
+} from './views.js';
 
-// Global variables and DOM element queries
 let songs = [];
-const recommendationsDiv = document.querySelector('#recommendations');
+
 const form = document.querySelector('#preferences-form');
 const randomPickBtn = document.querySelector('#random-pick');
 const randomPickArea = document.querySelector('#random-pick-area');
+const recommendationsDiv = document.querySelector('#recommendations');
+const narrationDiv = document.querySelector('#narration');
 const detailDiv = document.querySelector('#detail-view');
-const getRecommendationsBttn = document.querySelector('#get-recs');
+const requestInput = document.querySelector('#request');
 
-// Utility Functions
 export function loadCache(key) {
   try {
     const raw = localStorage.getItem(key);
     if (!raw) return null;
+
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) {
       localStorage.removeItem(key);
       return null;
     }
+
     return parsed;
   } catch {
     localStorage.removeItem(key);
@@ -32,22 +40,7 @@ export function saveCache(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
-    // Ignore localStorage errors
-  }
-}
-
-export function matchScoreLabel(score) {
-  switch (score) {
-    case 4:
-      return 'Perfect match';
-    case 3:
-      return 'Great match';
-    case 2:
-      return 'Good match';
-    case 1:
-      return 'Partial match';
-    default:
-      return '';
+    // Ignore localStorage errors.
   }
 }
 
@@ -55,229 +48,246 @@ function formatDuration(seconds) {
   if (typeof seconds !== 'number' || Number.isNaN(seconds)) {
     return '';
   }
-  const min = Math.floor(seconds / 60);
-  const sec = seconds % 60;
-  return `${min}:${sec.toString().padStart(2, '0')}`;
+
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
-// Data Fetching
-async function fetchSongs() {
-  recommendationsDiv.textContent = '';
-  const loading = document.createElement('div');
-  loading.className = 'song-card';
-  loading.textContent = 'Loading...';
-  recommendationsDiv.append(loading);
-  try {
-    const response = await fetch('/.netlify/functions/api');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    if (!Array.isArray(data)) {
-      throw new Error('Invalid data format from API');
-    }
-    songs = data;
-    saveCache('songs', data);
-  } catch (error) {
-    recommendationsDiv.textContent = '';
-    const message = document.createElement('div');
-    message.className = 'song-card';
-    message.textContent = `Error loading songs: ${error.message}`;
-    recommendationsDiv.append(message);
-    songs = [];
-  }
-}
-
-// Filtering and Preferences
 function getPreferences() {
-  const time = form.time.value;
-  const genre = form.genre.value;
-  const activity = form.activity ? form.activity.value : '';
-  const rank = form.rank ? form.rank.value : '';
-  return { time, genre, activity, rank };
+  return {
+    request: requestInput?.value.trim() ?? '',
+    time: form.time.value,
+    genre: form.genre.value,
+    rank: form.rank.value,
+  };
 }
 
-function getFilteredSongs(prefs) {
-  return songs.filter((song) => meetsAllCriteria(song, prefs));
+function buildUserInput(prefs) {
+  return [
+    `Request: ${prefs.request || 'top tracks'}`,
+    `Genre: ${prefs.genre || 'any'}`,
+    `Time limit: ${prefs.time || 'any'}`,
+    `Popularity: ${prefs.rank || 'any'}`,
+  ].join('\n');
 }
 
-// Rendering Functions
-function renderRecommendations(matches, prefs) {
-  recommendationsDiv.textContent = '';
-  if (!songs.length) {
-    const message = document.createElement('div');
-    message.className = 'song-card';
-    message.textContent = 'No songs available. Try again later!';
-    recommendationsDiv.append(message);
-    return;
-  }
-  if (!matches.length) {
-    showNoResults(recommendationsDiv);
-    return;
-  }
-  const scored = matches
-    .map((song) => ({
-      ...song,
-      matchScore: getMatchScore(song, prefs),
-    }))
-    .sort((a, b) => b.matchScore - a.matchScore)
-    .slice(0, 20);
-  showResults(scored, recommendationsDiv);
-  renderRecommendations.lastResults = scored;
+function buildCacheKey(prefs) {
+  return `songs:${encodeURIComponent(JSON.stringify(prefs))}`;
+}
+
+function showError(container, message) {
+  showStatus(container, message, 'status-card status-card--error');
+}
+
+function getCurrentSong(itemId) {
+  return songs.find((song) => String(song.id) === String(itemId));
 }
 
 function renderRandomPick(song) {
   randomPickArea.textContent = '';
+
   if (!song) {
-    const message = document.createElement('div');
-    message.className = 'random-pick-card';
-    message.textContent = 'No matches to spin! Try loosening your filters.';
-    randomPickArea.append(message);
+    showNoResults(
+      randomPickArea,
+      'No tracks are loaded yet. Submit the form first.'
+    );
     return;
   }
 
-  const card = document.createElement('div');
+  const card = document.createElement('article');
   card.className = 'random-pick-card';
 
   const recordIcon = document.createElement('span');
   recordIcon.className = 'record-icon';
-  recordIcon.setAttribute('aria-label', 'vinyl record');
-  recordIcon.setAttribute('role', 'img');
+  recordIcon.setAttribute('aria-hidden', 'true');
   recordIcon.textContent = '🎵';
 
-  const titleDiv = document.createElement('div');
-  titleDiv.className = 'song-title';
-  titleDiv.textContent = song.title;
+  const title = document.createElement('h3');
+  title.className = 'song-title';
+  title.textContent = song.title;
 
-  const artistDiv = document.createElement('div');
-  artistDiv.className = 'song-artist';
-  artistDiv.textContent = song.artist;
+  const artist = document.createElement('p');
+  artist.className = 'song-artist';
+  artist.textContent = song.artist;
 
-  const metaDiv = document.createElement('div');
-  metaDiv.className = 'song-meta';
+  const meta = document.createElement('div');
+  meta.className = 'song-meta';
 
-  const activitySpan = document.createElement('span');
-  if (song.activity) activitySpan.textContent = song.activity;
+  if (song.genre) {
+    const genre = document.createElement('span');
+    genre.textContent = song.genre;
+    meta.append(genre);
+  }
 
-  const vibeSpan = document.createElement('span');
-  if (song.vibe) vibeSpan.textContent = song.vibe;
+  if (typeof song.rank === 'number') {
+    const rank = document.createElement('span');
+    rank.textContent = `Rank ${song.rank}`;
+    meta.append(rank);
+  }
 
-  const genreSpan = document.createElement('span');
-  if (song.genre) genreSpan.textContent = song.genre;
+  if (song.durationSeconds) {
+    const duration = document.createElement('span');
+    duration.textContent = formatDuration(song.durationSeconds);
+    meta.append(duration);
+  }
 
-  const durationSpan = document.createElement('span');
-  durationSpan.textContent = formatDuration(song.durationSeconds);
+  card.append(recordIcon, title, artist, meta);
 
-  metaDiv.append(activitySpan, vibeSpan, genreSpan, durationSpan);
-  card.append(recordIcon, titleDiv, artistDiv, metaDiv);
+  if (song.preview) {
+    const audio = document.createElement('audio');
+    audio.controls = true;
+    audio.preload = 'none';
+    audio.src = song.preview;
+    audio.setAttribute('aria-label', `Preview for ${song.title}`);
+    card.append(audio);
+  }
+
   randomPickArea.append(card);
 }
 
-// Event Handlers
 function handleBackClick() {
-  if (detailDiv) detailDiv.classList.add('hidden');
-  if (recommendationsDiv) recommendationsDiv.classList.remove('hidden');
-  if (renderRecommendations.lastResults) {
-    showResults(renderRecommendations.lastResults, recommendationsDiv);
-  }
+  detailDiv.classList.add('hidden');
+  recommendationsDiv.classList.remove('hidden');
 }
 
-function handleCardClick(event) {
-  const backButton = event.target.closest('.back-btn');
-  if (backButton) {
-    handleBackClick();
+function handleTrackActivation(event) {
+  if (event.target.closest('audio, button, a, input, select, textarea')) {
     return;
   }
 
   const card = event.target.closest('.song-card');
   if (!card) return;
-  const title = card.dataset.title;
-  const item = renderRecommendations.lastResults?.find(
-    (song) => song.title === title
-  );
-  if (item && detailDiv) {
-    recommendationsDiv.classList.add('hidden');
-    showDetail(item, detailDiv);
+
+  const item = getCurrentSong(card.dataset.trackId);
+  if (!item) return;
+
+  recommendationsDiv.classList.add('hidden');
+  showDetail(item, detailDiv);
+}
+
+function handleTrackKeydown(event) {
+  if (event.key !== 'Enter' && event.key !== ' ') {
+    return;
+  }
+
+  const card = event.target.closest('.song-card');
+  if (!card) return;
+
+  event.preventDefault();
+  const item = getCurrentSong(card.dataset.trackId);
+  if (!item) return;
+
+  recommendationsDiv.classList.add('hidden');
+  showDetail(item, detailDiv);
+}
+
+async function loadRecommendations() {
+  const prefs = getPreferences();
+  const userInput = buildUserInput(prefs);
+
+  if (userInput.length > 500) {
+    songs = [];
+    recommendationsDiv.textContent = '';
+    showRefusal(narrationDiv, 'Please keep the request under 500 characters.');
+    showNoResults(recommendationsDiv, 'No tracks were loaded.');
+    return;
+  }
+
+  const cacheKey = buildCacheKey(prefs);
+  const cachedSongs = loadCache(cacheKey);
+  const hasCachedSongs = Array.isArray(cachedSongs);
+
+  if (hasCachedSongs) {
+    songs = cachedSongs;
+    showResults(songs, recommendationsDiv);
+  } else {
+    showLoading(recommendationsDiv, 'Loading Deezer tracks...');
+  }
+
+  showLoading(narrationDiv, 'Asking Groq for a short note...');
+
+  try {
+    const response = await fetch('/.netlify/functions/api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prefs,
+        userInput,
+        cachedSongs: hasCachedSongs ? cachedSongs : undefined,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data || !Array.isArray(data.songs) || !data.narration) {
+      throw new Error('Invalid data format from API');
+    }
+
+    songs = data.songs;
+    saveCache(cacheKey, songs);
+
+    if (data.narration.refused) {
+      songs = [];
+      recommendationsDiv.textContent = '';
+      showRefusal(narrationDiv, data.narration.refusal_reason);
+      showNoResults(recommendationsDiv, 'No recommendations were rendered.');
+      return;
+    }
+
+    if (songs.length) {
+      showResults(songs, recommendationsDiv);
+    } else {
+      showNoResults(recommendationsDiv);
+    }
+
+    showNarration(narrationDiv, data.narration, songs);
+  } catch (error) {
+    if (!hasCachedSongs) {
+      songs = [];
+      showNoResults(recommendationsDiv, 'No tracks could be loaded right now.');
+    }
+    showError(
+      narrationDiv,
+      `Could not load the latest narration. ${error.message}`
+    );
   }
 }
 
-// App Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // Attach Event Listeners
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
     randomPickArea.textContent = '';
-    if (!songs.length) {
-      await fetchSongs();
-    }
-    const prefs = getPreferences();
-    const matches = getFilteredSongs(prefs);
-    renderRecommendations(matches, prefs);
+    await loadRecommendations();
   });
 
   randomPickBtn.addEventListener('click', async () => {
     if (!songs.length) {
-      await fetchSongs();
+      await loadRecommendations();
     }
-    const prefs = getPreferences();
-    const matches = getFilteredSongs(prefs);
-    let pick = null;
-    if (matches.length) {
-      pick = matches[Math.floor(Math.random() * matches.length)];
-    } else if (songs.length) {
-      pick = songs[Math.floor(Math.random() * songs.length)];
+
+    if (!songs.length) {
+      renderRandomPick(null);
+      return;
     }
+
+    const pick = songs[Math.floor(Math.random() * songs.length)];
     renderRandomPick(pick);
   });
 
-  recommendationsDiv.addEventListener('click', handleCardClick);
+  recommendationsDiv.addEventListener('click', handleTrackActivation);
+  recommendationsDiv.addEventListener('keydown', handleTrackKeydown);
 
-  getRecommendationsBttn.addEventListener('click', () => {
-    setTimeout(() => {
-      const allOptions = document.querySelectorAll(
-        '#recommendations .song-card'
-      );
-      for (const [index, card] of allOptions.entries()) {
-        if (card.querySelector('.card-badge')) continue; // Don't add twice
-        card.classList.add('experiment-border');
-        const badge = document.createElement('span');
-        badge.textContent = `#${index + 1}`;
-        badge.className = 'card-badge';
-        card.prepend(badge);
-      }
-    }, 0);
+  detailDiv.addEventListener('click', (event) => {
+    if (event.target.closest('.back-btn')) {
+      handleBackClick();
+    }
   });
 
-  // Initial Load
-  (async () => {
-    const cached = loadCache('songs');
-    if (cached && Array.isArray(cached) && cached.length > 0) {
-      songs = cached;
-      renderRecommendations(songs.slice(0, 20), {});
-    } else {
-      await fetchSongs();
-      renderRecommendations(songs.slice(0, 20), {});
-    }
-  })();
-
-  // Style/UI additions
-  const img = document.createElement('img');
-  img.src = 'src/images/spinningRecord.gif';
-  img.alt = 'Spinning record animation';
-  img.classList.add('banner-image');
-  const subtitle = document.querySelector('p.subtitle');
-  if (subtitle) {
-    subtitle.after(img);
-  }
-
-  let footer = document.querySelector('footer');
-  if (!footer) {
-    footer = document.createElement('footer');
-    document.body.append(footer);
-  }
-  const link = document.createElement('a');
-  link.href = 'https://github.com/nedetample';
-  link.textContent = 'Visit my GitHub';
-  link.target = '_blank';
-  footer.append(link);
+  void loadRecommendations();
 });

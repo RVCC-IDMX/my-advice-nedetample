@@ -2,6 +2,12 @@
 
 This repo gives you a fully configured professional tooling setup. Your job is to use an AI agent conversation to plan and build your personal "What Should I...?" site inside it.
 
+## Groq final project
+
+This branch now uses Pattern B from `docs/INSTRUCTIONS.md`: Deezer tracks are fetched in `netlify/functions/api.mjs`, then Groq writes short narration on top of the returned tracks.
+
+Set `GROQ_API_KEY` in Netlify environment variables before deploying. Keep the key out of the repo, out of chat logs, and out of committed `.env` files.
+
 The tooling is already here — linting, formatting, pre-commit hooks, CI, and a dev server. You bring the site.
 
 ## Getting started

@@ -1,24 +1,345 @@
-.song-detail .song-meta {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
+/* Cozy music app theme */
+:root {
+  --color-bg: hsl(28 34% 93%);
+  --color-bg-accent: hsl(35 44% 88%);
+  --color-surface: hsl(35 38% 98%);
+  --color-surface-strong: hsl(32 30% 90%);
+  --color-text: hsl(225 18% 18%);
+  --color-muted: hsl(226 10% 42%);
+  --color-border: hsl(28 20% 82%);
+  --color-primary: hsl(16 72% 44%);
+  --color-primary-strong: hsl(16 70% 34%);
+  --color-secondary: hsl(184 46% 30%);
+  --color-secondary-soft: hsl(184 34% 90%);
+  --color-focus: hsl(196 85% 38%);
+  --color-shadow: hsla(225, 18%, 18%, 0.12);
 }
-/* Modal overlay for detail view */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 18px;
+  background:
+    radial-gradient(circle at top, hsl(35 56% 97%), transparent 45%),
+    linear-gradient(180deg, var(--color-bg), var(--color-bg-accent));
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  color: var(--color-text);
+  background:
+    radial-gradient(
+      circle at 15% 15%,
+      hsla(16, 72%, 44%, 0.12),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 85% 8%,
+      hsla(184, 46%, 30%, 0.12),
+      transparent 20%
+    ),
+    linear-gradient(180deg, var(--color-bg), var(--color-bg-accent));
+  font-family: 'Avenir Next', 'Gill Sans', 'Trebuchet MS', sans-serif;
+  line-height: 1.6;
+}
+
+body,
+button,
+input,
+select {
+  font: inherit;
+}
+
+header.hero {
+  padding: 2rem 1rem 1.5rem;
+  text-align: center;
+}
+
+header.hero h1 {
+  margin: 0;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: clamp(2.2rem, 6vw, 3.8rem);
+  letter-spacing: 0.02em;
+  color: var(--color-primary-strong);
+}
+
+header.hero .subtitle {
+  margin: 0.5rem auto 0;
+  max-width: 38rem;
+  color: var(--color-muted);
+}
+
+main {
+  width: min(72rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 0 0 2rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.preferences-card,
+.narration-card,
+.random-pick-card,
+.song-card,
+.song-detail,
+.status-card {
+  border: 1px solid var(--color-border);
+  border-radius: 1.25rem;
+  box-shadow: 0 16px 36px var(--color-shadow);
+  background: var(--color-surface);
+}
+
+.preferences-card {
+  padding: 1.25rem;
+}
+
+.form-group {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+label {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+input,
+select {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  background: hsl(0 0% 100%);
+  color: var(--color-text);
+  padding: 0.8rem 0.95rem;
+}
+
+input::placeholder {
+  color: var(--color-muted);
+}
+
+.form-help {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.75rem 1.15rem;
+  background: var(--color-primary);
+  color: hsl(0 0% 100%);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+  box-shadow: 0 10px 22px hsla(16, 72%, 44%, 0.18);
+}
+
+button:hover {
+  background: var(--color-primary-strong);
+  transform: translateY(-1px);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+.song-card:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.results-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.results-section h2 {
+  margin: 0;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 1.6rem;
+}
+
+#narration,
+#random-pick-area,
+#recommendations {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.status-card,
+.narration-card,
+.random-pick-card,
+.song-card,
+.song-detail {
+  padding: 1rem;
+}
+
+.status-card {
+  color: var(--color-muted);
+}
+
+.status-card--error,
+.status-card--refusal {
+  background: hsl(0 70% 97%);
+  color: hsl(0 40% 28%);
+  border-color: hsl(0 50% 84%);
+}
+
+.status-card--empty,
+.status-card--loading {
+  background: var(--color-surface-strong);
+}
+
+.narration-card {
+  background: var(--color-secondary-soft);
+  border-color: hsl(184 32% 80%);
+}
+
+.narration-intro {
+  margin: 0;
+  color: var(--color-secondary);
+  font-weight: 700;
+}
+
+.narration-list {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.narration-note {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.narration-track-title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.narration-why {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.song-card,
+.random-pick-card,
+.song-detail {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.song-card {
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.song-card:hover {
+  transform: translateY(-1px);
+}
+
+.album-cover {
+  width: 100%;
+  border-radius: 0.9rem;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: hsl(0 0% 95%);
+}
+
+.album-cover--detail {
+  max-width: 18rem;
+  justify-self: center;
+}
+
+.album-title {
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+  font-weight: 700;
+}
+
+.song-title {
+  margin: 0;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 1.15rem;
+  color: var(--color-primary-strong);
+}
+
+.song-artist {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.song-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.92rem;
+}
+
+.song-rank {
+  color: var(--color-secondary);
+  font-weight: 700;
+}
+
+.song-preview {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.song-preview-label {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+audio {
+  width: 100%;
+}
+
+#random-pick-area {
+  min-height: 0;
+}
+
+.random-pick-card {
+  background: linear-gradient(135deg, hsl(44 82% 90%), hsl(32 76% 95%));
+  border-color: hsl(38 50% 80%);
+  position: relative;
+}
+
+.record-icon {
+  justify-self: end;
+  font-size: 2rem;
+}
+
 #detail-view {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(30, 34, 45, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  transition: opacity 0.2s;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: hsla(225, 18%, 12%, 0.6);
 }
 
 #detail-view.hidden {
@@ -26,338 +347,51 @@
 }
 
 .song-detail {
-  background: var(--color-bg);
-  color: var(--color-text);
-  border-radius: 1.2rem;
-  box-shadow: 0 4px 32px 0 rgba(0, 0, 0, 0.18);
-  padding: 2.5rem 2rem 2rem 2rem;
-  min-width: 320px;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: 3px solid var(--color-accent);
+  width: min(36rem, 100%);
+  max-height: min(90dvh, 48rem);
+  overflow: auto;
+  background: var(--color-surface);
 }
 
 .back-btn {
-  margin-top: 2rem;
-  padding: 0.5rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  background: var(--color-accent);
-  color: #fff;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
-  transition: background 0.2s;
+  justify-self: start;
+  background: var(--color-secondary);
 }
-.back-btn:focus,
+
 .back-btn:hover {
-  background: hsl(220, 70%, 40%);
-  outline: 2px solid var(--color-accent);
+  background: hsl(184 46% 24%);
 }
-/* Custom properties — use hsl() for all colors */
-:root {
-  --color-text: hsl(220, 15%, 20%);
-  --color-bg: hsl(220, 15%, 97%);
-  --color-accent: hsl(220, 70%, 50%);
-  --color-muted: hsl(220, 10%, 60%);
-}
-/* Reset */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-/* Base */
-body {
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
-  color: var(--color-text);
-  background-color: var(--color-bg);
-  line-height: 1.6;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-}
-main {
-  flex: 1;
-  padding: 2rem 1rem;
-  max-width: 40rem;
-  margin: 0 auto;
-  width: 100%;
-}
-header {
-  padding: 1.5rem 1rem;
-  text-align: center;
-}
+
 footer {
-  padding: 1rem;
+  padding: 0 1rem 1.5rem;
   text-align: center;
   color: var(--color-muted);
-  font-size: 0.875rem;
-}
-/* Mobile-first — add min-width queries as needed */
-/*
-  Cozy Retro Records Theme
-  All colors use CSS custom properties in :root
-*/
-:root {
-  --color-bg: hsl(32, 40%, 96%);
-  --color-card: hsl(24, 35%, 92%);
-  --color-primary: hsl(18, 60%, 55%);
-  --color-accent: hsl(50, 95%, 80%); /* pale yellow */
-  --color-dark: hsl(24, 20%, 25%);
-  --color-muted: hsl(200, 20%, 80%);
-  --color-focus: hsl(200, 80%, 60%);
-  --color-shadow: hsla(24, 20%, 25%, 0.08);
 }
 
-html {
-  box-sizing: border-box;
-  font-size: 18px;
-  background: var(--color-bg);
-  color: var(--color-dark);
-}
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-body {
-  margin: 0;
-  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-  background: var(--color-bg);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-header.hero {
-  background: var(--color-card);
-  padding: 2rem 1rem 1rem 1rem;
-  border-bottom: 2px solid var(--color-muted);
-  text-align: center;
-  border-radius: 0 0 2rem 2rem;
-  box-shadow: 0 2px 8px var(--color-shadow);
-}
-header.hero h1 {
-  font-size: 2.2rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  margin: 0 0 0.5rem 0;
-  color: var(--color-primary);
-  text-shadow: 1px 2px 0 var(--color-muted);
-}
-header.hero .subtitle {
-  font-size: 1.1rem;
-  color: var(--color-dark);
-  opacity: 0.8;
-  margin-bottom: 0.5rem;
-}
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-}
-.preferences-card {
-  background: var(--color-card);
-  border-radius: 1.5rem;
-  box-shadow: 0 2px 8px var(--color-shadow);
-  padding: 1.5rem 1rem;
-  margin-bottom: 2rem;
-  width: 100%;
-  max-width: 420px;
-}
-.form-group {
-  margin-bottom: 1.1rem;
-  display: flex;
-  flex-direction: column;
-}
-label {
-  font-weight: 600;
-  margin-bottom: 0.3rem;
-  color: var(--color-dark);
-}
-select {
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-muted);
-  background: #fff;
-  font-size: 1rem;
-  color: var(--color-dark);
-}
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
-button {
-  background: var(--color-primary);
-  color: #fff;
-  border: none;
-  border-radius: 2rem;
-  padding: 0.6rem 1.3rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 1px 4px var(--color-shadow);
-  transition:
-    background 0.2s,
-    transform 0.2s;
-}
-button:focus {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
-}
-button:hover {
-  background: var(--color-accent);
-  transform: scale(1.04);
-}
-.results-section {
-  width: 100%;
-  max-width: 600px;
-  margin-bottom: 2rem;
-}
-#recommendations {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.2rem;
-  margin-top: 1.2rem;
-}
-.song-card {
-  background: #fff;
-  border-radius: 1.2rem;
-  box-shadow: 0 2px 8px var(--color-shadow);
-  padding: 1.1rem 1rem 1rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  border-left: 6px solid var(--color-primary);
-  position: relative;
-}
-.song-card .song-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--color-primary);
-}
-.song-card .song-artist {
-  font-size: 1rem;
-  color: var(--color-dark);
-  opacity: 0.85;
-}
-.song-card .song-meta {
-  font-size: 0.95rem;
-  color: var(--color-dark);
-  opacity: 0.7;
-  display: flex;
-  gap: 0.7rem;
-  flex-wrap: wrap;
-}
-.song-card .match-score {
-  font-size: 0.9rem;
-  color: var(--color-accent);
-  font-weight: 600;
-  margin-top: 0.2rem;
-}
-#random-pick-area {
-  margin: 1.5rem 0 0.5rem 0;
-  min-height: 3.5rem;
-}
-.random-pick-card {
-  background: var(--color-accent);
-  color: var(--color-dark);
-  border-radius: 1.5rem;
-  box-shadow: 0 2px 12px var(--color-shadow);
-  padding: 1.2rem 1rem 1rem 1rem;
-  margin-bottom: 1.2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  border-left: 8px solid var(--color-primary);
-  position: relative;
-}
-.random-pick-card .record-icon {
-  position: absolute;
-  top: -1.2rem;
-  right: 1.2rem;
-  font-size: 2.2rem;
-  filter: drop-shadow(0 2px 4px var(--color-shadow));
-}
-.random-pick-card .song-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--color-dark);
-}
-.random-pick-card .song-artist {
-  font-size: 1rem;
-  color: var(--color-dark);
-  opacity: 0.85;
-}
-.random-pick-card .song-meta {
-  font-size: 0.98rem;
-  color: var(--color-dark);
-  opacity: 0.8;
-  display: flex;
-  gap: 0.7rem;
-  flex-wrap: wrap;
-}
-footer {
-  text-align: center;
-  padding: 1.2rem 0 0.7rem 0;
-  color: var(--color-dark);
-  opacity: 0.7;
-  font-size: 1rem;
-}
-@media (min-width: 600px) {
+@media (min-width: 720px) {
   main {
-    padding: 2rem 0;
+    grid-template-columns: minmax(18rem, 26rem) minmax(0, 1fr);
+    align-items: start;
   }
+
   .results-section {
-    margin-top: 1.5rem;
+    grid-column: 2;
   }
+
+  .preferences-card {
+    position: sticky;
+    top: 1rem;
+  }
+
   #recommendations {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-/* Custom properties — use hsl() for all colors */
-:root {
-  --color-text: hsl(220, 15%, 20%);
-  --color-bg: hsl(220, 15%, 97%);
-  --color-accent: hsl(220, 70%, 50%);
-  --color-muted: hsl(220, 10%, 60%);
-}
 
-/* Reset */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* Base */
-body {
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
-  color: var(--color-text);
-  background-color: var(--color-bg);
-  line-height: 1.6;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
+@media (min-width: 1080px) {
+  #recommendations {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 main {
