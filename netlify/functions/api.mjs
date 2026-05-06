@@ -62,16 +62,20 @@ function parseBody(event) {
   }
 }
 
-function getSearchTerm(prefs = {}) {
+function getSearchTerms(prefs = {}) {
+  const terms = [];
+
   if (prefs.request) {
-    return prefs.request;
+    terms.push(prefs.request.trim());
   }
 
   if (prefs.genre) {
-    return prefs.genre;
+    terms.push(prefs.genre.trim());
   }
 
-  return 'top tracks';
+  terms.push('top tracks');
+
+  return [...new Set(terms.filter((term) => term.length > 0))];
 }
 
 function buildUserInput(prefs = {}) {
@@ -261,6 +265,17 @@ async function fetchDeezerTracks(searchTerm) {
   return Array.isArray(json.data) ? json.data.map(mapTrack) : [];
 }
 
+async function fetchTracksWithFallbacks(prefs) {
+  for (const term of getSearchTerms(prefs)) {
+    const tracks = await fetchDeezerTracks(term);
+    if (tracks.length) {
+      return tracks;
+    }
+  }
+
+  return [];
+}
+
 export async function handler(event) {
   if (
     event.httpMethod &&
@@ -289,8 +304,7 @@ export async function handler(event) {
   }
 
   try {
-    const songs =
-      cachedSongs || (await fetchDeezerTracks(getSearchTerm(prefs)));
+    const songs = cachedSongs || (await fetchTracksWithFallbacks(prefs));
     const filteredSongs = filterSongs(songs, prefs);
 
     if (!filteredSongs.length) {
